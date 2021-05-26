@@ -1,0 +1,97 @@
+Step 1:
+
+
+●	What do you think is wrong with the code, if anything?
+
+    One problem is that their are too many nested if statements which could have an impact on the systems stability and performance. 
+
+●	Can you see any potential problems that could lead to exceptions?
+
+    The line that contains "if (err || !shop)" may be a problem. Due to if the program catches any error instead of a 404 not found it will 
+    return the same message which is displaying an incorrect error to the user.
+
+    On the line "if (shop.invitations.indexOf(invitationResponse.body.invitationId)) " needs to have a "=== -1" to check whether the shop contains the response invitaionID and
+    if not then it will add it.
+
+
+●	How would you refactor this code to:
+
+○	Make it easier to read
+
+    -Add comments throughout to quickly see what each section of code is doing.
+    -Switch the if statements to ternanry operator which can make the code significally shorter and easier to read.
+
+○	Increase code reusability
+
+    -Divide the code into different modules and that way they can be applied to other parts of the system if ever required.
+
+○	Improve the stability of the system
+
+    -Applying Unit testing to the code which can act as a first barrier of entry to identify any bugs hidden within the code.
+
+○	Improve the testability of the code
+
+    -One method would be using unit testing as mentioned earlier but another method would be Integration testing due to the use of api's it is important to
+    have a testing layer which tests the interaction with the endpoint and make sure their are no changes.
+
+●	How might you use the latest JavaScript features to refactor the code?
+
+    -One tool to use within JavaScript for end-to-end testing is nightwatch.js. Nightwatch.js runs on Node.js and runs against a Selenium/WebDriver server 
+    can check an endpoint of an api.
+
+Step 2: 
+
+exports.inviteUser = function(req, res) {
+  var invitationBody = req.body;
+  var shopId = req.params.shopId;
+  const authUrl = "https://url.to.auth.system.com/invitation";
+
+  superagent
+    .post(authUrl)
+    .send(invitationBody)
+    .end(function(err, invitationResponse) {
+    
+    //Checks if response has succeeded and updating user authorization id
+      (invitationResponse.status === 201) ? {
+        User.findOneAndUpdate({
+          authId: invitationResponse.body.authId
+        }, {
+          authId: invitationResponse.body.authId,
+          email: invitationBody.email
+        }, {
+          upsert: true,
+          new: true
+        }, (err, createdUser) => {
+          Shop.findById(shopId).exec(function(err, shop) {
+
+            //Checks if error code equals to 404 not found or no shop exists
+            if (err === 404 || !shop) {
+              return res.status(500).send(err || { message: 'No shop found' });
+            }
+
+            //if shop doesnt contain invitaion Id of response then it will add it 
+
+            if (shop.invitations.indexOf(invitationResponse.body.invitationId) === -1) {
+              shop.invitations.push(invitationResponse.body.invitationId);
+            }
+
+            //if shop doesnt contain the created users Id of response then it will add it 
+
+            if (shop.users.indexOf(createdUser._id) === -1) {
+              shop.users.push(createdUser);
+            }
+            shop.save();
+          });
+        });
+
+        //else if reponse equals to 200 returns user already invited to shop
+      } : (invitationResponse.status === 200) {
+        res.status(400).json({
+          error: true,
+          message: 'User already invited to this shop'
+        });
+        return;
+      }
+      res.json(invitationResponse);
+    });
+};
