@@ -1,24 +1,13 @@
 # vue.js_app
 
-## Project setup
+### First run the express server located in the server file with node:
 ```
-npm install
+node index.js
 ```
 
-### Compiles and hot-reloads for development
+### Run the vue.js app with the following command
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
