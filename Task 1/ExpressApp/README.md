@@ -1,9 +1,9 @@
 # Express App
 
 First run the express server which is located in the server folder:
-
-### `node index.js`
-
+```
+ node index.js
+```
 Then run the express app which is created with react and can be ran with:
 
 ### `npm start`
