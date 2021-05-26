@@ -1,13 +1,12 @@
-# Getting Started with Create React App
+# Express App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+First run the express server which is located in the server folder:
 
-## Available Scripts
+### `node index.js`
 
-In the project directory, you can run:
+Then run the express app which is created with react and can be ran with:
 
 ### `npm start`
 
-Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
